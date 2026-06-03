@@ -33,6 +33,9 @@ dependencies {
 	// Spring MVC + Rest API
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 
+	// WebFlux (for WebClient - 비동기 외부 API 호출용)
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 
@@ -47,6 +50,9 @@ dependencies {
 
 	// YAML 파일 파싱 라이브러리
 	implementation 'org.yaml:snakeyaml:2.5'
+
+	// .env 파일 환경변수 로딩
+	implementation 'io.github.cdimascio:dotenv-java:3.1.0'
 
 	// 테스트용 라이브러리
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
