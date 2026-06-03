@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class ExternalApiController {
+public class ExternalApiController implements ExternalApiControllerApiSpec {
 
     private final WeatherClient weatherClient;
     private final DirectionsClient directionsClient;

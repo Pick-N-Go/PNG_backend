@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/wishlist")
-public class WishlistController {
+public class WishlistController implements WishlistControllerApiSpec {
 
     @GetMapping
     public ResponseEntity<List<WishlistResponse>> getWishlist() {

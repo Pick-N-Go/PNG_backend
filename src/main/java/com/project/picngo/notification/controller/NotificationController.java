@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/notifications")
-public class NotificationController {
+public class NotificationController implements NotificationControllerApiSpec {
 
     @GetMapping
     public ResponseEntity<List<NotificationResponse>> getNotifications() {
