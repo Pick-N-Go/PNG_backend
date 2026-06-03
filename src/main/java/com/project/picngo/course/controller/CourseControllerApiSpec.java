@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@Tag(name = "코스 (Course)", description = "코스 관리 및 명소(Spot) 편집 API")
+@Tag(name = "코스 (Course)", description = "코스 생성, 조회 및 코스 내 방문 장소 관리 API")
 public interface CourseControllerApiSpec {
 
     @Operation(summary = "전체 코스 목록 조회", description = "사용자가 생성하거나 접근 가능한 코스 목록을 반환합니다.")
