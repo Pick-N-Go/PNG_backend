@@ -1,6 +1,6 @@
-package com.project.picngo.course.entity;
+package com.project.picngo.course.domain;
 
-import com.project.picngo.common.entity.BaseTimeEntity;
+import com.project.picngo.common.domain.BaseTimeEntity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

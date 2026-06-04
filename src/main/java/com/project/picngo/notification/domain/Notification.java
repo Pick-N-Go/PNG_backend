@@ -1,4 +1,4 @@
-package com.project.picngo.notification.entity;
+package com.project.picngo.notification.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

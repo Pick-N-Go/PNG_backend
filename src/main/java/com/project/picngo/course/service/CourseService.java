@@ -1,9 +1,9 @@
 package com.project.picngo.course.service;
 
 import com.project.picngo.course.dto.*;
-import com.project.picngo.course.entity.Course;
-import com.project.picngo.course.entity.CourseChecklist;
-import com.project.picngo.course.entity.CourseSpot;
+import com.project.picngo.course.domain.Course;
+import com.project.picngo.course.domain.CourseChecklist;
+import com.project.picngo.course.domain.CourseSpot;
 import com.project.picngo.course.repository.CourseChecklistRepository;
 import com.project.picngo.course.repository.CourseRepository;
 import com.project.picngo.course.repository.CourseSpotRepository;

@@ -1,6 +1,6 @@
 package com.project.picngo.course.repository;
 
-import com.project.picngo.course.entity.Course;
+import com.project.picngo.course.domain.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

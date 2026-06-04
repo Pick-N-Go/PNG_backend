@@ -1,6 +1,6 @@
 package com.project.picngo.wishlist.repository;
 
-import com.project.picngo.wishlist.entity.Wishlist;
+import com.project.picngo.wishlist.domain.Wishlist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

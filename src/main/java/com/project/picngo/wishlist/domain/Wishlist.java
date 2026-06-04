@@ -1,6 +1,6 @@
-package com.project.picngo.wishlist.entity;
+package com.project.picngo.wishlist.domain;
 
-import com.project.picngo.common.entity.BaseTimeEntity;
+import com.project.picngo.common.domain.BaseTimeEntity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
