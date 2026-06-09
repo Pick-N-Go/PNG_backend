@@ -1,3 +1,26 @@
 spring:
   application:
     name: picngo
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+weather:
+  api:
+    key: ${WEATHER_SERVICE_KEY}
+
+kakao:
+  rest:
+    api:
+      key: ${KAKAO_REST_API_KEY}
