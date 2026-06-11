@@ -1,6 +1,8 @@
 package com.project.picngo.wishlist.domain;
 
 import com.project.picngo.common.domain.BaseTimeEntity;
+import com.project.picngo.wishlist.domain.enums.TimeCondition;
+import com.project.picngo.wishlist.domain.enums.WeatherCondition;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,17 +25,19 @@ public class WishlistItem extends BaseTimeEntity {
     @Column(nullable = false)
     private Long spotId;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 50)
-    private String weatherCondition;
+    private WeatherCondition weatherCondition;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 50)
-    private String timeCondition;
+    private TimeCondition timeCondition;
 
     @Column(nullable = false)
     private Boolean isActive = true;
 
     @Builder
-    public WishlistItem(Wishlist wishlist, Long spotId, String weatherCondition, String timeCondition) {
+    public WishlistItem(Wishlist wishlist, Long spotId, WeatherCondition weatherCondition, TimeCondition timeCondition) {
         this.wishlist = wishlist;
         this.spotId = spotId;
         this.weatherCondition = weatherCondition;
@@ -41,7 +45,7 @@ public class WishlistItem extends BaseTimeEntity {
         this.isActive = true;
     }
 
-    public void updateConditions(String weatherCondition, String timeCondition, Boolean isActive) {
+    public void updateConditions(WeatherCondition weatherCondition, TimeCondition timeCondition, Boolean isActive) {
         this.weatherCondition = weatherCondition;
         this.timeCondition = timeCondition;
         this.isActive = isActive;
