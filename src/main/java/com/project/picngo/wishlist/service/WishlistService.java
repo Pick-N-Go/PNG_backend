@@ -26,8 +26,7 @@ public class WishlistService {
         // Fetch all wishlists (folders) for the user.
         // For production, use Fetch Join to avoid N+1 problem with items.
         // For now, we rely on lazy loading (which may trigger N+1) until we optimize queries.
-        return wishlistRepository.findAll().stream()
-                .filter(w -> w.getUserId().equals(userId))
+        return wishlistRepository.findAllByUserId(userId).stream()
                 .map(WishlistResponse::from)
                 .collect(Collectors.toList());
     }
