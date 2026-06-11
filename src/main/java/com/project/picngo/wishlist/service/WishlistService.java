@@ -1,15 +1,17 @@
 package com.project.picngo.wishlist.service;
 
 import com.project.picngo.external.WeatherClient;
-import com.project.picngo.wishlist.dto.WishlistCreateRequest;
-import com.project.picngo.wishlist.dto.WishlistResponse;
-import com.project.picngo.wishlist.dto.WishlistUpdateRequest;
+import com.project.picngo.wishlist.domain.Wishlist;
+import com.project.picngo.wishlist.domain.WishlistItem;
+import com.project.picngo.wishlist.dto.*;
+import com.project.picngo.wishlist.repository.WishlistItemRepository;
 import com.project.picngo.wishlist.repository.WishlistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -17,28 +19,89 @@ import java.util.List;
 public class WishlistService {
 
     private final WishlistRepository wishlistRepository;
+    private final WishlistItemRepository wishlistItemRepository;
     private final WeatherClient weatherClient;
+
+    public List<WishlistResponse> getWishlist(Long userId) {
+        // Fetch all wishlists (folders) for the user.
+        // For production, use Fetch Join to avoid N+1 problem with items.
+        // For now, we rely on lazy loading (which may trigger N+1) until we optimize queries.
+        return wishlistRepository.findAll().stream()
+                .filter(w -> w.getUserId().equals(userId))
+                .map(WishlistResponse::from)
+                .collect(Collectors.toList());
+    }
 
     @Transactional
     public WishlistResponse createWishlist(Long userId, WishlistCreateRequest request) {
-        // TODO: Implement create wishlist logic
-        return null;
+        Wishlist wishlist = Wishlist.builder()
+                .userId(userId)
+                .name(request.name())
+                .build();
+        Wishlist saved = wishlistRepository.save(wishlist);
+        return WishlistResponse.from(saved);
     }
 
-    public List<WishlistResponse> getWishlist(Long userId) {
-        // TODO: Implement get wishlist logic
-        return List.of();
+    public WishlistResponse getWishlistDetail(Long id, Long userId) {
+        Wishlist wishlist = wishlistRepository.findById(id)
+                .filter(w -> w.getUserId().equals(userId))
+                .orElseThrow(() -> new IllegalArgumentException("위시리스트를 찾을 수 없거나 권한이 없습니다."));
+        return WishlistResponse.from(wishlist);
     }
 
     @Transactional
-    public WishlistResponse updateWishlist(Long id, WishlistUpdateRequest request) {
-        // TODO: Implement update wishlist logic
-        return null;
+    public WishlistResponse updateWishlist(Long id, Long userId, WishlistUpdateRequest request) {
+        Wishlist wishlist = wishlistRepository.findById(id)
+                .filter(w -> w.getUserId().equals(userId))
+                .orElseThrow(() -> new IllegalArgumentException("위시리스트를 찾을 수 없거나 권한이 없습니다."));
+        
+        wishlist.updateName(request.name());
+        return WishlistResponse.from(wishlist);
     }
 
-    // Scheduled task to check conditions
+    @Transactional
+    public void deleteWishlist(Long id, Long userId) {
+        Wishlist wishlist = wishlistRepository.findById(id)
+                .filter(w -> w.getUserId().equals(userId))
+                .orElseThrow(() -> new IllegalArgumentException("위시리스트를 찾을 수 없거나 권한이 없습니다."));
+        wishlistRepository.delete(wishlist);
+    }
+
+    @Transactional
+    public WishlistItemResponse addItemToWishlist(Long id, Long userId, WishlistItemRequest request) {
+        Wishlist wishlist = wishlistRepository.findById(id)
+                .filter(w -> w.getUserId().equals(userId))
+                .orElseThrow(() -> new IllegalArgumentException("위시리스트를 찾을 수 없거나 권한이 없습니다."));
+
+        WishlistItem item = WishlistItem.builder()
+                .wishlist(wishlist)
+                .spotId(request.spotId())
+                .weatherCondition(request.weatherCondition())
+                .timeCondition(request.timeCondition())
+                .build();
+        
+        wishlist.addItem(item);
+        WishlistItem savedItem = wishlistItemRepository.save(item);
+        
+        return WishlistItemResponse.from(savedItem);
+    }
+
+    @Transactional
+    public void removeItemFromWishlist(Long id, Long itemId, Long userId) {
+        Wishlist wishlist = wishlistRepository.findById(id)
+                .filter(w -> w.getUserId().equals(userId))
+                .orElseThrow(() -> new IllegalArgumentException("위시리스트를 찾을 수 없거나 권한이 없습니다."));
+
+        WishlistItem item = wishlistItemRepository.findById(itemId)
+                .filter(i -> i.getWishlist().getId().equals(wishlist.getId()))
+                .orElseThrow(() -> new IllegalArgumentException("아이템을 찾을 수 없습니다."));
+
+        wishlist.getItems().remove(item);
+        wishlistItemRepository.delete(item);
+    }
+
     @Transactional
     public void checkConditionsAndNotify() {
-        // TODO: Get all active wishlists, use weatherClient to check conditions, and notify
+        // TODO: Scheduler logic for later
     }
 }
