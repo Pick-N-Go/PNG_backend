@@ -96,7 +96,6 @@ public class WishlistService {
                 .orElseThrow(() -> new IllegalArgumentException("아이템을 찾을 수 없습니다."));
 
         wishlist.getItems().remove(item);
-        wishlistItemRepository.delete(item);
     }
 
     @Transactional
