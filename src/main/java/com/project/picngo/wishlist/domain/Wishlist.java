@@ -1,12 +1,14 @@
 package com.project.picngo.wishlist.domain;
 
 import com.project.picngo.common.domain.BaseTimeEntity;
-
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,33 +22,23 @@ public class Wishlist extends BaseTimeEntity {
     @Column(nullable = false)
     private Long userId;
 
-    @Column(nullable = false)
-    private Long spotId;
+    @Column(length = 100, nullable = false)
+    private String name;
 
-    @Column(length = 50)
-    private String weatherCondition; // e.g. CLEAR, CLOUDY
-
-    @Column(length = 50)
-    private String timeCondition; // e.g. SUNRISE, SUNSET
-
-    @Column(nullable = false)
-    private Boolean isActive = true;
+    @OneToMany(mappedBy = "wishlist", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WishlistItem> items = new ArrayList<>();
 
     @Builder
-    public Wishlist(Long userId, Long spotId, String weatherCondition, String timeCondition) {
+    public Wishlist(Long userId, String name) {
         this.userId = userId;
-        this.spotId = spotId;
-        this.weatherCondition = weatherCondition;
-        this.timeCondition = timeCondition;
-        this.isActive = true;
+        this.name = name;
     }
 
-    public void updateConditions(String weatherCondition, String timeCondition, Boolean isActive) {
-        this.weatherCondition = weatherCondition;
-        this.timeCondition = timeCondition;
-        this.isActive = isActive;
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void addItem(WishlistItem item) {
+        this.items.add(item);
     }
 }
-
-
-
