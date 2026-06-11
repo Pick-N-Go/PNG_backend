@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/wishlist")
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class WishlistController implements WishlistControllerApiSpec {
     }
 
     @PostMapping
-    public ResponseEntity<WishlistResponse> createWishlist(@RequestBody WishlistCreateRequest request) {
+    public ResponseEntity<WishlistResponse> createWishlist(@Valid @RequestBody WishlistCreateRequest request) {
         return ResponseEntity.ok(wishlistService.createWishlist(TEMP_USER_ID, request));
     }
 
@@ -33,7 +35,7 @@ public class WishlistController implements WishlistControllerApiSpec {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<WishlistResponse> updateWishlist(@PathVariable Long id, @RequestBody WishlistUpdateRequest request) {
+    public ResponseEntity<WishlistResponse> updateWishlist(@PathVariable Long id, @Valid @RequestBody WishlistUpdateRequest request) {
         return ResponseEntity.ok(wishlistService.updateWishlist(id, TEMP_USER_ID, request));
     }
 
@@ -46,7 +48,7 @@ public class WishlistController implements WishlistControllerApiSpec {
     @PostMapping("/{id}/items")
     public ResponseEntity<WishlistItemResponse> addItemToWishlist(
             @PathVariable Long id,
-            @RequestBody WishlistItemRequest request) {
+            @Valid @RequestBody WishlistItemRequest request) {
         return ResponseEntity.ok(wishlistService.addItemToWishlist(id, TEMP_USER_ID, request));
     }
 
