@@ -41,9 +41,7 @@ public class NotificationService {
 
     @Transactional
     public void markAllAsRead(Long userId) {
-        notificationRepository.findAllByUserId(userId).stream()
-                .filter(n -> !n.getIsRead())
-                .forEach(com.project.picngo.notification.domain.Notification::markAsRead);
+        notificationRepository.markAllAsReadByUserId(userId);
     }
 
     @Transactional
