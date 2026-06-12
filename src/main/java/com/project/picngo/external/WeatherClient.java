@@ -32,8 +32,9 @@ public class WeatherClient {
     public List<WeatherForecastResponse> getForecast(Double lat, Double lng, String date) {
         LatXLngYConverter.LatXLngY grid = LatXLngYConverter.convertGrid(lat, lng);
 
+        KmaWeatherApiResponse apiResponse;
         try {
-            KmaWeatherApiResponse apiResponse = kmaWebClient.get()
+            apiResponse = kmaWebClient.get()
                     .uri(uriBuilder -> uriBuilder.path("/getVilageFcst")
                             .queryParam("serviceKey", serviceKey)
                             .queryParam("pageNo", 1)
@@ -47,21 +48,22 @@ public class WeatherClient {
                     .retrieve()
                     .bodyToMono(KmaWeatherApiResponse.class)
                     .block();
-
-            List<WeatherForecastResponse> result = new ArrayList<>();
-            if (apiResponse != null && apiResponse.response().body() != null) {
-                result.add(new WeatherForecastResponse(date, "1200", "CLEAR", 22.5));
-            }
-            return result;
         } catch (Exception e) {
             log.error("기상청 API 호출 실패", e);
             throw new CustomException(ExternalApiErrorCode.WEATHER_API_ERROR);
         }
+
+        List<WeatherForecastResponse> result = new ArrayList<>();
+        if (apiResponse != null && apiResponse.response().body() != null) {
+            result.add(new WeatherForecastResponse(date, "1200", "CLEAR", 22.5));
+        }
+        return result;
     }
 
     public GoldenHourResponse getGoldenHour(Double lat, Double lng, String date) {
+        SunriseSunsetApiResponse apiResponse;
         try {
-            SunriseSunsetApiResponse apiResponse = sunriseWebClient.get()
+            apiResponse = sunriseWebClient.get()
                     .uri(uriBuilder -> uriBuilder.path("/json")
                             .queryParam("lat", lat)
                             .queryParam("lng", lng)
@@ -71,18 +73,16 @@ public class WeatherClient {
                     .retrieve()
                     .bodyToMono(SunriseSunsetApiResponse.class)
                     .block();
-
-            if (apiResponse != null && "OK".equals(apiResponse.status())) {
-                String sunriseUtc = apiResponse.results().sunrise();
-                String sunsetUtc = apiResponse.results().sunset();
-                return new GoldenHourResponse(sunriseUtc, sunsetUtc, "Morning Golden Hour", "Evening Golden Hour");
-            }
-            throw new CustomException(ExternalApiErrorCode.WEATHER_API_ERROR);
-        } catch (CustomException e) {
-            throw e;
         } catch (Exception e) {
             log.error("Sunrise API 호출 실패", e);
             throw new CustomException(ExternalApiErrorCode.WEATHER_API_ERROR);
         }
+
+        if (apiResponse != null && "OK".equals(apiResponse.status())) {
+            String sunriseUtc = apiResponse.results().sunrise();
+            String sunsetUtc = apiResponse.results().sunset();
+            return new GoldenHourResponse(sunriseUtc, sunsetUtc, "Morning Golden Hour", "Evening Golden Hour");
+        }
+        throw new CustomException(ExternalApiErrorCode.WEATHER_API_ERROR);
     }
 }

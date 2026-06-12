@@ -26,8 +26,9 @@ public class KakaoDirectionsClient implements DirectionsClient {
     }
 
     public DirectionsResponse getTravelInfo(Double startLat, Double startLng, Double goalLat, Double goalLng) {
+        KakaoDirectionsApiResponse apiResponse;
         try {
-            KakaoDirectionsApiResponse apiResponse = webClient.get()
+            apiResponse = webClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .queryParam("origin", startLng + "," + startLat)
                             .queryParam("destination", goalLng + "," + goalLat)
@@ -36,24 +37,22 @@ public class KakaoDirectionsClient implements DirectionsClient {
                     .retrieve()
                     .bodyToMono(KakaoDirectionsApiResponse.class)
                     .block();
-
-            if (apiResponse != null && apiResponse.routes() != null && !apiResponse.routes().isEmpty()) {
-                KakaoDirectionsApiResponse.Route route = apiResponse.routes().get(0);
-                if (route.result_code() == 0) {
-                    KakaoDirectionsApiResponse.Summary summary = route.summary();
-                    int minutes = summary.duration() / 60; // 카카오는 초 단위 반환
-                    return new DirectionsResponse(minutes, summary.distance());
-                } else {
-                    log.error("카카오 길찾기 API 비정상 응답: {}", route.result_msg());
-                }
-            }
-            throw new CustomException(ExternalApiErrorCode.KAKAO_API_ERROR);
-        } catch (CustomException e) {
-            throw e;
         } catch (Exception e) {
             log.error("카카오 길찾기 API 호출 실패", e);
             throw new CustomException(ExternalApiErrorCode.KAKAO_API_ERROR);
         }
+
+        if (apiResponse != null && apiResponse.routes() != null && !apiResponse.routes().isEmpty()) {
+            KakaoDirectionsApiResponse.Route route = apiResponse.routes().get(0);
+            if (route.result_code() == 0) {
+                KakaoDirectionsApiResponse.Summary summary = route.summary();
+                int minutes = summary.duration() / 60; // 카카오는 초 단위 반환
+                return new DirectionsResponse(minutes, summary.distance());
+            } else {
+                log.error("카카오 길찾기 API 비정상 응답: {}", route.result_msg());
+            }
+        }
+        throw new CustomException(ExternalApiErrorCode.KAKAO_API_ERROR);
     }
 
     public Integer getTravelTimeMinutes(Double startLat, Double startLng, Double goalLat, Double goalLng) {
