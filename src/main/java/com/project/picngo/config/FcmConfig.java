@@ -8,7 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.FileInputStream;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -19,15 +21,22 @@ public class FcmConfig {
     @Value("${firebase.config.path:}")
     private String firebaseConfigPath;
 
+    private final ResourceLoader resourceLoader;
+
+    public FcmConfig(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
     @PostConstruct
     public void init() {
         try {
-            if (firebaseConfigPath == null || firebaseConfigPath.isEmpty()) {
+            if (firebaseConfigPath == null || firebaseConfigPath.trim().isEmpty()) {
                 log.warn("🔥 Firebase 설정 파일 경로가 없습니다. FCM 초기화를 건너뜁니다.");
                 return;
             }
 
-            InputStream serviceAccount = new FileInputStream(firebaseConfigPath);
+            Resource resource = resourceLoader.getResource(firebaseConfigPath);
+            InputStream serviceAccount = resource.getInputStream();
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
