@@ -2,6 +2,7 @@ package com.project.picngo.notification.service;
 
 import com.project.picngo.notification.dto.NotificationResponse;
 import com.project.picngo.notification.dto.NotificationSettingUpdateRequest;
+import com.project.picngo.notification.domain.NotificationSetting;
 import com.project.picngo.notification.repository.NotificationRepository;
 import com.project.picngo.notification.repository.NotificationSettingRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +20,30 @@ public class NotificationService {
     private final NotificationSettingRepository notificationSettingRepository;
 
     public List<NotificationResponse> getNotifications(Long userId) {
-        // TODO: Implement get notifications logic
-        return List.of();
+        return notificationRepository.findAllByUserId(userId).stream()
+                .map(NotificationResponse::from)
+                .toList();
     }
 
     @Transactional
-    public void markAsRead(Long id) {
-        // TODO: Implement mark as read logic
+    public void updateFcmToken(Long userId, String token) {
+        NotificationSetting setting = notificationSettingRepository.findByUserId(userId)
+                .orElseGet(() -> notificationSettingRepository.save(NotificationSetting.builder().userId(userId).build()));
+        setting.updateFcmToken(token);
+    }
+
+    @Transactional
+    public void markAsRead(Long id, Long userId) {
+        notificationRepository.findById(id)
+                .filter(n -> n.getUserId().equals(userId))
+                .ifPresent(com.project.picngo.notification.domain.Notification::markAsRead);
+    }
+
+    @Transactional
+    public void markAllAsRead(Long userId) {
+        notificationRepository.findAllByUserId(userId).stream()
+                .filter(n -> !n.getIsRead())
+                .forEach(com.project.picngo.notification.domain.Notification::markAsRead);
     }
 
     @Transactional
