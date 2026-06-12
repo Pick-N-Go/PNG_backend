@@ -48,8 +48,12 @@ public class NotificationService {
 
     @Transactional
     public void updateSettings(Long userId, NotificationSettingUpdateRequest request) {
-        // TODO: Implement update settings logic
+        NotificationSetting setting = notificationSettingRepository.findByUserId(userId)
+                .orElseGet(() -> notificationSettingRepository.save(NotificationSetting.builder().userId(userId).build()));
+        
+        setting.updateSettings(request.isAllPushEnabled(), request.dndStartTime(), request.dndEndTime());
     }
+
 
     @Transactional
     public void sendPushNotification(Long userId, String type, String title, String content, String deepLink) {

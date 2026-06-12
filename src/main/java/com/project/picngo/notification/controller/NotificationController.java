@@ -41,7 +41,8 @@ public class NotificationController implements NotificationControllerApiSpec {
     }
 
     @PutMapping("/settings")
-    public ResponseEntity<Void> updateSettings(@RequestBody NotificationSettingUpdateRequest request) {
+    public ResponseEntity<Void> updateSettings(@RequestParam Long userId, @RequestBody NotificationSettingUpdateRequest request) {
+        notificationService.updateSettings(userId, request);
         return ResponseEntity.ok().build();
     }
 }

@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Slf4j
@@ -25,6 +27,7 @@ public class NotificationScheduler {
         List<NotificationSetting> activeSettings = notificationSettingRepository.findAll().stream()
                 .filter(NotificationSetting::getIsAllPushEnabled)
                 .filter(setting -> setting.getFcmToken() != null && !setting.getFcmToken().isEmpty())
+                .filter(setting -> !isDndActive(setting))
                 .toList();
 
         for (NotificationSetting setting : activeSettings) {
@@ -40,5 +43,23 @@ public class NotificationScheduler {
         }
         
         log.info("매일 아침 7시 알림 스케줄러 실행 종료.");
+    }
+
+    private boolean isDndActive(NotificationSetting setting) {
+        if (setting.getDndStartTime() == null || setting.getDndEndTime() == null) {
+            return false;
+        }
+        
+        LocalTime now = LocalTime.now(ZoneId.of("Asia/Seoul"));
+        LocalTime start = setting.getDndStartTime();
+        LocalTime end = setting.getDndEndTime();
+
+        if (start.isBefore(end)) {
+            // 예: 10:00 ~ 18:00
+            return !now.isBefore(start) && now.isBefore(end);
+        } else {
+            // 예: 22:00 ~ 07:00 (자정 넘어가는 경우)
+            return !now.isBefore(start) || now.isBefore(end);
+        }
     }
 }

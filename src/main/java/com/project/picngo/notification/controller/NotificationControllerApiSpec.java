@@ -28,6 +28,6 @@ public interface NotificationControllerApiSpec {
     @Operation(summary = "모든 알림 읽음 처리", description = "사용자의 안 읽은 모든 알림을 읽음 상태로 변경합니다.")
     ResponseEntity<Void> markAllAsRead(@Parameter(description = "유저 ID (임시)") @RequestParam Long userId);
 
-    @Operation(summary = "알림 수신 설정 변경", description = "푸시/이메일 알림 수신 여부(ON/OFF)를 변경합니다.")
-    ResponseEntity<Void> updateSettings(@RequestBody NotificationSettingUpdateRequest request);
+    @Operation(summary = "알림 수신 설정 변경", description = "푸시 알림 수신 여부 및 방해금지 시간(DND)을 변경합니다.")
+    ResponseEntity<Void> updateSettings(@Parameter(description = "유저 ID (임시)") @RequestParam Long userId, @RequestBody NotificationSettingUpdateRequest request);
 }
