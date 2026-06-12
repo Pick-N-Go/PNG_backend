@@ -5,6 +5,8 @@ import com.project.picngo.external.dto.GoldenHourResponse;
 import com.project.picngo.external.dto.KmaWeatherApiResponse;
 import com.project.picngo.external.dto.SunriseSunsetApiResponse;
 import com.project.picngo.external.dto.WeatherForecastResponse;
+import com.project.picngo.common.exception.CustomException;
+import com.project.picngo.common.exception.code.ExternalApiErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -53,7 +55,7 @@ public class WeatherClient {
             return result;
         } catch (Exception e) {
             log.error("기상청 API 호출 실패", e);
-            throw new RuntimeException("날씨 정보를 불러오는 데 실패했습니다.");
+            throw new CustomException(ExternalApiErrorCode.WEATHER_API_ERROR);
         }
     }
 
@@ -75,10 +77,12 @@ public class WeatherClient {
                 String sunsetUtc = apiResponse.results().sunset();
                 return new GoldenHourResponse(sunriseUtc, sunsetUtc, "Morning Golden Hour", "Evening Golden Hour");
             }
-            throw new RuntimeException("Sunrise API 응답 오류");
+            throw new CustomException(ExternalApiErrorCode.WEATHER_API_ERROR);
+        } catch (CustomException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Sunrise API 호출 실패", e);
-            throw new RuntimeException("골든아워 정보를 불러오는 데 실패했습니다.");
+            throw new CustomException(ExternalApiErrorCode.WEATHER_API_ERROR);
         }
     }
 }

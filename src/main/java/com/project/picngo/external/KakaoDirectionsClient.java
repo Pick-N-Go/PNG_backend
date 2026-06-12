@@ -2,6 +2,8 @@ package com.project.picngo.external;
 
 import com.project.picngo.external.dto.DirectionsResponse;
 import com.project.picngo.external.dto.KakaoDirectionsApiResponse;
+import com.project.picngo.common.exception.CustomException;
+import com.project.picngo.common.exception.code.ExternalApiErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -45,10 +47,12 @@ public class KakaoDirectionsClient implements DirectionsClient {
                     log.error("카카오 길찾기 API 비정상 응답: {}", route.result_msg());
                 }
             }
-            throw new RuntimeException("길찾기 API 응답 이상");
+            throw new CustomException(ExternalApiErrorCode.KAKAO_API_ERROR);
+        } catch (CustomException e) {
+            throw e;
         } catch (Exception e) {
             log.error("카카오 길찾기 API 호출 실패", e);
-            throw new RuntimeException("이동 시간을 계산할 수 없습니다.");
+            throw new CustomException(ExternalApiErrorCode.KAKAO_API_ERROR);
         }
     }
 
