@@ -25,7 +25,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error("MethodArgumentNotValidException: {}", e.getMessage(), e);
-        String errorMessage = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        
+        String errorMessage = e.getBindingResult().getAllErrors().stream()
+                .findFirst()
+                .map(error -> error.getDefaultMessage())
+                .orElse(CommonErrorCode.INVALID_INPUT_VALUE.getMessage());
+                
         return ResponseEntity
                 .status(CommonErrorCode.INVALID_INPUT_VALUE.getStatus())
                 .body(ErrorResponse.of(CommonErrorCode.INVALID_INPUT_VALUE, errorMessage));
