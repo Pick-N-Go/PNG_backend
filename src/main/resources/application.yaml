@@ -24,3 +24,7 @@ kakao:
   rest:
     api:
       key: ${KAKAO_REST_API_KEY}
+
+firebase:
+  config:
+    path: ${FIREBASE_CONFIG_PATH}
