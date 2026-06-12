@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FcmService {
 
+    private final FirebaseMessaging firebaseMessaging;
+
     public void sendMessage(String targetToken, String title, String body, String deepLink) {
         if (targetToken == null || targetToken.isEmpty()) {
             log.warn("FCM Token이 없어 알림을 보낼 수 없습니다.");
@@ -32,7 +34,7 @@ public class FcmService {
         }
 
         try {
-            String response = FirebaseMessaging.getInstance().send(messageBuilder.build());
+            String response = firebaseMessaging.send(messageBuilder.build());
             log.info("FCM 알림 발송 성공: {}", response);
         } catch (Exception e) {
             log.error("FCM 알림 발송 실패", e);
