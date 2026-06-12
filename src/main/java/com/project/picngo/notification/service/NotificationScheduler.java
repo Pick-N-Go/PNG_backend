@@ -24,9 +24,7 @@ public class NotificationScheduler {
     public void scheduleDailyPushNotifications() {
         log.info("매일 아침 7시 알림 스케줄러 실행 시작...");
 
-        List<NotificationSetting> activeSettings = notificationSettingRepository.findAll().stream()
-                .filter(NotificationSetting::getIsAllPushEnabled)
-                .filter(setting -> setting.getFcmToken() != null && !setting.getFcmToken().isEmpty())
+        List<NotificationSetting> activeSettings = notificationSettingRepository.findActiveSettingsWithToken().stream()
                 .filter(setting -> !isDndActive(setting))
                 .toList();
 
